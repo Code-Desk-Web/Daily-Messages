@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff8fb">
+  <title>Daily Message For You</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #452b3b;
+      --muted: #9c7d8f;
+      --rose: #e85d91;
+      --rose-dark: #c83d74;
+      --pink: #fff0f6;
+      --paper: #fffdfd;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 10% 12%, #ffe1ed 0, transparent 33%),
+        radial-gradient(ellipse at 90% 84%, #ffe5ef 0, transparent 31%),
+        #fff9fc;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    }
+
+    button { font: inherit; }
+
+    .scene {
+      position: relative;
+      display: grid;
+      min-height: 100svh;
+      overflow: hidden;
+      place-items: center;
+      padding: 32px 22px 24px;
+      isolation: isolate;
+    }
+
+    .scene::before,
+    .scene::after {
+      position: absolute;
+      z-index: -1;
+      width: 430px;
+      height: 430px;
+      border: 1px solid rgb(232 93 145 / 12%);
+      border-radius: 50%;
+      content: "";
+      animation: orbit 24s linear infinite;
+    }
+
+    .scene::before { top: -260px; right: -120px; }
+    .scene::after {
+      bottom: -315px;
+      left: -100px;
+      width: 540px;
+      height: 540px;
+      animation-direction: reverse;
+    }
+
+    .glow {
+      position: absolute;
+      z-index: -1;
+      top: 50%;
+      left: 50%;
+      width: min(76vw, 650px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: #ffe8f1;
+      filter: blur(80px);
+      opacity: .8;
+      transform: translate(-50%, -50%);
+      animation: breathe 5s ease-in-out infinite;
+    }
+
+    .layout {
+      display: grid;
+      width: min(100%, 1030px);
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: clamp(32px, 7vw, 84px);
+    }
+
+    .copy {
+      position: relative;
+      z-index: 1;
+      padding: 20px 0;
+      animation: rise-in .9s .15s both;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 22px;
+      color: var(--rose-dark);
+      font-size: .82rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+    }
+
+    .eyebrow::before {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--rose);
+      box-shadow: 0 0 0 5px #fce4ed;
+      content: "";
+    }
+
+    h1 {
+      max-width: 510px;
+      margin: 0;
+      font-size: clamp(2.6rem, 5.4vw, 5rem);
+      font-weight: 800;
+      letter-spacing: -.055em;
+      line-height: 1.18;
+    }
+
+    h1 span {
+      display: block;
+      color: var(--rose);
+    }
+
+    .intro {
+      max-width: 430px;
+      margin: 21px 0 30px;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.4vw, 1.1rem);
+      line-height: 1.9;
+    }
+
+    .open-button {
+      display: inline-flex;
+      min-height: 56px;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 0 25px;
+      border: 0;
+      border-radius: 18px;
+      color: white;
+      background: linear-gradient(135deg, #ef78a4, #d94d82);
+      box-shadow: 0 12px 30px rgb(216 72 127 / 25%), inset 0 1px 0 rgb(255 255 255 / 35%);
+      cursor: pointer;
+      font-weight: 700;
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+    .open-button:hover {
+      box-shadow: 0 16px 36px rgb(216 72 127 / 34%), inset 0 1px 0 rgb(255 255 255 / 35%);
+      transform: translateY(-3px);
+    }
+
+    .open-button:active { transform: translateY(0) scale(.98); }
+    .open-button:focus-visible { outline: 3px solid #f4a8c4; outline-offset: 4px; }
+
+    .button-icon {
+      display: grid;
+      width: 26px;
+      height: 26px;
+      border-radius: 9px;
+      background: rgb(255 255 255 / 20%);
+      place-items: center;
+      transition: transform .4s ease;
+    }
+
+    .button-label.button-label-changing {
+      animation: tip-reveal .35s ease both;
+    }
+
+    .open-button:hover .button-icon { transform: translateX(-4px) rotate(-8deg); }
+
+    .signature {
+      margin-top: 21px;
+      color: #b69baa;
+      font-size: .82rem;
+      text-align: center;
+    }
+
+    .card-stage {
+      position: relative;
+      display: grid;
+      min-height: 500px;
+      place-items: center;
+      perspective: 1200px;
+    }
+
+    .card-stack {
+      position: relative;
+      width: min(100%, 360px);
+      height: 430px;
+    }
+
+    .card-shadow {
+      position: absolute;
+      width: min(78%, 370px);
+      height: 55px;
+      bottom: 57px;
+      border-radius: 50%;
+      background: rgb(141 75 107 / 18%);
+      filter: blur(22px);
+      pointer-events: none;
+      animation: shadow-float 5s ease-in-out infinite;
+    }
+
+    .card {
+      position: absolute;
+      inset: 0;
+      width: min(100%, 360px);
+      min-height: 430px;
+      padding: 34px 32px 30px;
+      overflow: hidden;
+      border: 1px solid rgb(232 93 145 / 14%);
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 100% 0, rgb(255 225 237 / 70%), transparent 34%),
+        linear-gradient(155deg, #fff 15%, #fffafd 100%);
+      box-shadow: 0 30px 80px rgb(111 48 78 / 13%), 0 4px 14px rgb(111 48 78 / 5%);
+      text-align: center;
+      transform: rotate(-3deg);
+      translate: 0 0;
+      animation: card-float 5s ease-in-out infinite;
+      transition: transform .6s cubic-bezier(.2,.8,.2,1), box-shadow .7s ease;
+    }
+
+    .card-stack .card:not(:first-child) {
+      animation: none;
+    }
+
+    .card.card-entering {
+      animation: card-deal .55s cubic-bezier(.2,.8,.2,1) both;
+    }
+
+    .card::before {
+      position: absolute;
+      inset: 12px;
+      border: 1px solid rgb(232 93 145 / 17%);
+      border-radius: 20px;
+      content: "";
+      pointer-events: none;
+    }
+
+    .card::after {
+      position: absolute;
+      top: -57px;
+      left: -58px;
+      width: 145px;
+      height: 145px;
+      border: 1px solid rgb(232 93 145 / 14%);
+      border-radius: 50%;
+      box-shadow: 0 0 0 12px rgb(232 93 145 / 4%), 0 0 0 24px rgb(232 93 145 / 3%);
+      content: "";
+    }
+
+    .opened .card {
+      box-shadow: 0 38px 90px rgb(111 48 78 / 19%), 0 5px 18px rgb(111 48 78 / 7%);
+      transform: rotate(0) scale(1.035);
+    }
+
+    .card-topline {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #bd9aaa;
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .13em;
+    }
+
+    .card-topline span:last-child { color: #e58bab; }
+
+    .flower {
+      position: relative;
+      display: grid;
+      width: 130px;
+      height: 130px;
+      margin: 35px auto 24px;
+      border: 1px solid #f9dbe6;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff7fa 0 43%, #fff 44% 100%);
+      box-shadow: 0 0 0 9px rgb(255 241 247 / 70%), 0 12px 26px rgb(219 110 151 / 12%);
+      place-items: center;
+    }
+
+    .flower svg { width: 76px; height: 76px; overflow: visible; }
+    .flower path { transform-origin: center; animation: petal-sway 4s ease-in-out infinite; }
+    .flower path:nth-child(2n) { animation-delay: -.7s; }
+    .flower path:nth-child(3n) { animation-delay: -1.4s; }
+
+    .card-title {
+      margin: 0;
+      color: var(--rose-dark);
+      font-size: 1.72rem;
+      font-weight: 800;
+    }
+
+    .card-subtitle {
+      margin: 9px 0 18px;
+      color: #ad91a0;
+      font-size: .91rem;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: #e88eae;
+    }
+
+    .divider::before,
+    .divider::after {
+      width: 35px;
+      height: 1px;
+      background: #f2cfdd;
+      content: "";
+    }
+
+    .card-message {
+      max-height: 0;
+      margin: 0;
+      overflow: hidden;
+      color: #987b8b;
+      font-size: .94rem;
+      line-height: 1.9;
+      opacity: 0;
+      transform: translateY(12px);
+      visibility: hidden;
+      transition: max-height .7s ease, margin .5s ease, opacity .5s ease, transform .5s ease;
+    }
+
+    .opened .card-message {
+      max-height: 260px;
+      margin-top: 15px;
+      opacity: 1;
+      transform: translateY(0);
+      visibility: visible;
+    }
+
+    .card-message.tip-changing {
+      animation: tip-reveal .45s ease both;
+    }
+
+    .sparkle {
+      position: absolute;
+      color: #e88eae;
+      animation: twinkle 2.8s ease-in-out infinite;
+    }
+
+    .sparkle.one { top: 18%; right: 3%; font-size: 22px; }
+    .sparkle.two { right: 8%; bottom: 18%; font-size: 16px; animation-delay: -.8s; }
+    .sparkle.three { top: 13%; left: 5%; color: #d98aaa; font-size: 17px; animation-delay: -1.5s; }
+    .sparkle.four { bottom: 20%; left: 1%; font-size: 24px; animation-delay: -.4s; }
+
+    .float-heart {
+      position: absolute;
+      color: #e998b5;
+      opacity: .8;
+      animation: drift 6s ease-in-out infinite;
+    }
+
+    .float-heart.a { top: 9%; right: 18%; font-size: 18px; }
+    .float-heart.b { bottom: 12%; left: 13%; font-size: 13px; animation-delay: -2s; }
+    .float-heart.c { right: 4%; bottom: 37%; font-size: 12px; animation-delay: -3.4s; }
+
+    .confetti {
+      position: fixed;
+      z-index: 5;
+      top: -20px;
+      width: 9px;
+      height: 14px;
+      border-radius: 3px;
+      pointer-events: none;
+      animation: confetti-fall var(--duration) cubic-bezier(.15,.55,.3,1) forwards;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      clip-path: inset(50%);
+    }
+    h2#main-title { 
+      font-size: clamp(1.9rem, 5vw, 2.8rem); 
+    }
+
+    @keyframes card-float {
+      0%, 100% { translate: 0 0; }
+      50% { translate: 0 -15px; }
+    }
+
+    @keyframes shadow-float {
+      0%, 100% { opacity: .75; transform: scale(1); }
+      50% { opacity: .45; transform: scale(.88); }
+    }
+
+    @keyframes breathe {
+      0%, 100% { opacity: .6; transform: translate(-50%, -50%) scale(.9); }
+      50% { opacity: .95; transform: translate(-50%, -50%) scale(1.08); }
+    }
+
+    @keyframes orbit { to { transform: rotate(360deg); } }
+    @keyframes rise-in { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes tip-reveal { from { opacity: .25; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes card-deal { from { opacity: 0; translate: 0 -35px; scale: .94; } to { opacity: 1; translate: 0 0; scale: 1; } }
+    @keyframes twinkle { 0%, 100% { opacity: .45; transform: scale(.8) rotate(0); } 50% { opacity: 1; transform: scale(1.18) rotate(16deg); } }
+    @keyframes drift { 0%, 100% { transform: translate(0, 0) rotate(-8deg); } 50% { transform: translate(8px, -15px) rotate(12deg); } }
+    @keyframes petal-sway { 0%, 100% { transform: rotate(-3deg) scale(1); } 50% { transform: rotate(4deg) scale(1.04); } }
+    @keyframes confetti-fall {
+      0% { opacity: 1; transform: translate3d(0, -5vh, 0) rotate(0); }
+      100% { opacity: 0; transform: translate3d(var(--drift), 110vh, 0) rotate(var(--spin)); }
+    }
+
+    @media (max-width: 760px) {
+      .scene { padding: 28px 20px 36px; }
+      .layout { max-width: 520px; grid-template-columns: 1fr; gap: 72px; }
+      .copy { padding: 18px 4px 0; text-align: center; }
+      .eyebrow { margin-bottom: 16px; }
+      h1 { margin-inline: auto; font-size: clamp(2.65rem, 11vw, 4rem); }
+      .intro { margin: 15px auto 21px; }
+      .signature { margin-top: 15px; text-align: center; }
+      .card-stage { min-height: 430px; }
+      .card-stack { width: min(88%, 340px); height: 400px; }
+      .card { width: 100%; min-height: 400px; padding: 30px 27px 26px; }
+      .flower { width: 115px; height: 115px; margin: 29px auto 20px; }
+    }
+
+    @media (max-width: 380px) {
+      .scene { padding-inline: 14px; }
+      .card-stack { width: 94%; }
+      .card-stage { min-height: 410px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+    
+  </style>
+</head>
+<body>
+  <main class="scene" id="scene">
+    <div class="glow" aria-hidden="true"></div>
+    <span class="float-heart a" aria-hidden="true">♥</span>
+    <span class="float-heart b" aria-hidden="true">♥</span>
+    <span class="float-heart c" aria-hidden="true">♥</span>
+
+    <div class="layout">
+      <section class="copy" aria-labelledby="main-title">
+        <!-- <div class="eyebrow">لحظة صغيرة… وفرحة كبيرة</div> -->
+        <h2 id="main-title">A Sweet Message Waiting For You</h2>
+        <p class="intro"></p>
+        <button class="open-button" id="open-button" type="button" aria-expanded="false" aria-controls="card-message">
+          <span class="button-label">Pick Yours</span>
+          <span class="button-icon" aria-hidden="true">←</span>
+        </button>
+        <!-- <p class="signature">Crafted with Love ♡</p> -->
+      </section>
+
+      <section class="card-stage" aria-label="كارت معايدة">
+        <span class="sparkle one" aria-hidden="true">✦</span>
+        <span class="sparkle two" aria-hidden="true">✧</span>
+        <span class="sparkle three" aria-hidden="true">✦</span>
+        <span class="sparkle four" aria-hidden="true">✧</span>
+        <div class="card-shadow" aria-hidden="true"></div>
+        <div class="card-stack" id="card-stack">
+        <article class="card" id="greeting-card">
+          <div class="card-topline"><span>WITH LOVE</span><span>✿</span></div>
+          <div class="flower" aria-hidden="true">
+            <svg viewBox="0 0 100 100" fill="none">
+              <path d="M50 47C36 39 40 22 50 18C60 22 64 39 50 47Z" fill="#F6A8C3"/>
+              <path d="M53 50C61 36 78 40 82 50C78 60 61 64 53 50Z" fill="#F3BDD0"/>
+              <path d="M50 53C64 61 60 78 50 82C40 78 36 61 50 53Z" fill="#F6A8C3"/>
+              <path d="M47 50C39 64 22 60 18 50C22 40 39 36 47 50Z" fill="#F3BDD0"/>
+              <path d="M49 47C39 38 47 29 54 34C61 29 68 39 54 49L51 52L49 47Z" fill="#E8759E"/>
+              <circle cx="50" cy="50" r="4" fill="#FBE8EF"/>
+            </svg>
+          </div>
+          <h2 class="card-title">Today's Msg</h2>
+          <!-- <p class="card-subtitle">تستاهل كل الفرح اللي في الدنيا</p> -->
+          <div class="divider" aria-hidden="true">♡</div>
+          <p class="card-message" id="card-message">رسالة صغيرة فيها كلمة حلوة مستنياك.</p>
+        </article>
+        </div>
+      </section>
+    </div>
+    <div class="sr-only" id="announcement" aria-live="polite"></div>
+    ♡ Crafted with Love 
+  </main>
+
+  <script>
+    const scene = document.querySelector("#scene");
+    const button = document.querySelector("#open-button");
+    const buttonLabel = document.querySelector(".button-label");
+    const cardStack = document.querySelector("#card-stack");
+    const cardTemplate = document.querySelector("#greeting-card").cloneNode(true);
+    const announcement = document.querySelector("#announcement");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const tips = [
+      "خد وقتك؛ مش لازم توصل لكل حاجة مرة واحدة. كل خطوة صغيرة بتقرّبك.",
+      "افتكر إن راحتك مش رفاهية؛ خصص لنفسك وقت تهدى فيه وتستعيد طاقتك.",
+      "ما تقارنش رحلتك بحد؛ لكل واحد حكايته وتوقيته الجميل.",
+      "لو حاجة ما مشيتش زي ما خططت، اعتبرها فرصة لبداية مختلفة مش نهاية الطريق.",
+      "احتفل بإنجازاتك الصغيرة؛ هي اللي بتصنع الفروق الكبيرة مع الوقت.",
+      "اختار الناس اللي وجودهم يطمنك ويشجعك تكون على طبيعتك.",
+      "كن لطيفًا مع نفسك، خصوصًا في الأيام اللي بتحس فيها إن كل حاجة صعبة.",
+      "ما تنساش تطلب المساعدة لما تحتاجها؛ القوة كمان إننا نسمح لغيرنا يساندنا.",
+      "ابدأ يومك بحاجة بتحبها، حتى لو كانت فنجان قهوة على رواق.",
+      "اكتب أفكارك؛ ساعات ترتيبها على الورق بيخليها أبسط وأوضح.",
+      "حط لنفسك أهداف صغيرة تقدر تفرح بتحقيقها واحدة واحدة.",
+      "خد نفس عميق قبل ما ترد وقت الزعل؛ الهدوء بيديك مساحة تختار كلامك.",
+      "قول «لأ» للحاجة اللي بتضغطك من غير ما تحس بالذنب.",
+      "افتكر إن رأي الناس مش مقياس لقيمتك ولا لطريقك.",
+      "اعمل حاجة جديدة بتحمّسك؛ التجربة أوقات بتفتح أبواب ما كنتش شايفها.",
+      "سيب مساحة للراحة بين المهام؛ مش مطلوب منك تفضل منتج طول الوقت.",
+      "اشرب مية وخد فاصل بسيط؛ جسمك كمان محتاج اهتمامك.",
+      "لو اتأخرت في حاجة، ابدأ من جديد من غير ما تلوم نفسك.",
+      "احتفظ بذكرى حلوة من كل يوم، مهما كان بسيط.",
+      "ما تهملش الحاجات اللي بتفرحك وإنت مشغول بتحقيق أهدافك.",
+      "اسأل عن اللي بتحبهم؛ رسالة صغيرة ممكن تفرق في يوم حد.",
+      "خلي كلامك مع نفسك حنون زي كلامك مع أقرب صاحب ليك.",
+      "اتعلم من الغلطة، وبعدها سامح نفسك وكمّل.",
+      "مش لازم كل حاجة تكون مثالية عشان تكون جميلة ومهمة.",
+      "ابدأ بالأهم، وسيب الباقي لوقته؛ ترتيب الأولويات بيخفف الضغط.",
+      "ابعد شوية عن الشاشة وادي عينيك وعقلك فرصة يرتاحوا.",
+      "اتمشّى شوية لو تقدر؛ الحركة الخفيفة بتغير المود.",
+      "اسأل نفسك: إيه أكتر حاجة محتاجها دلوقتي؟ وابدأ بيها.",
+      "خلي حدودك واضحة؛ احترامك لوقتك ومشاعرك مش أنانية.",
+      "فرحتك بإنجاز غيرك مش معناها إنك متأخر؛ لكل واحد توقيته.",
+      "لو محتار، اكتب الاختيارات ومميزات وعيوب كل اختيار.",
+      "احتفل بشجاعتك في المحاولة، حتى لو النتيجة لسه ما ظهرتش.",
+      "خلي حواليك حاجة تذكرك بالأمل؛ صورة أو كلمة أو ذكرى لطيفة.",
+      "مش كل يوم لازم يكون يوم إنجاز؛ أوقات الراحة هي الإنجاز.",
+      "ما تخافش تغير رأيك لما تتعلم حاجة جديدة عن نفسك.",
+      "اسمع للناس اللي بتحبهم، بس خد قرارك من مكان يناسبك إنت.",
+      "خصص مبلغ صغير للادخار كل ما تقدر؛ الاستمرارية أهم من الكمية.",
+      "اتعلم مهارة بتحبها حتى لو عشر دقايق كل يوم.",
+      "خلي مواعيد نومك أقرب للانتظام؛ النوم الكفاية بيفرق في يومك.",
+      "ما توافقش على حاجة لمجرد إنك خايف تزعل حد؛ مشاعرك مهمة كمان.",
+      "احتفظ بقائمة للحاجات اللي نجحت فيها عشان ترجع لها وقت الشك.",
+      "لو يومك تقيل، قسمه لخطوات صغيرة وخد كل خطوة لوحدها.",
+      "ابعد عن النقاش اللي ملوش فايدة؛ مش كل اختلاف محتاج رد.",
+      "قول لنفسك «أنا بتعلم» بدل «أنا فشلت»؛ الكلمة بتغير إحساسك.",
+      "جرب تعبر عن امتنانك لشخص أثر فيك؛ الكلام الحلو بيفضل.",
+      "اختار لبس يريحك ويشبهك؛ راحتك وثقتك أهم من أي ترند.",
+      "خد وقتك في اتخاذ القرارات الكبيرة، وما تستعجلش تحت الضغط.",
+      "لما تحس بالتشتت، اقفل إشعاراتك وركز على حاجة واحدة.",
+      "اسأل عن احتياجاتك بوضوح؛ محدش يقدر يعرف كل اللي جواك من غير كلام.",
+      "اعمل لنفسك روتين بسيط تحبه، مش قائمة طويلة تحسسك بالتقصير.",
+      "مشاعرك كلها مسموح بيها؛ ادي لنفسك وقت تحسها من غير حكم.",
+      "لو علاقة بتستنزفك باستمرار، فكر في الحدود اللي تحمي سلامك.",
+      "ابدأ المهمة الصعبة بخمس دقايق بس؛ البداية غالبًا أصعب جزء.",
+      "ما تحكمش على يوم كامل من لحظة وحشة؛ لسه ممكن يحصل فيه الحلو.",
+      "احتفظ بأرقام ومعلومات مهمة في مكان آمن ومنظم.",
+      "اطلب توضيح لما حاجة تكون مش مفهومة بدل ما تشيل هم التخمين.",
+      "خلي عندك وقت من غير خطط؛ العفوية أوقات بتجيب أحلى اللحظات.",
+      "تقبل المجاملة بابتسامة؛ إنت تستاهل تسمع الكلام الحلو.",
+      "كل مرة بتختار فيها نفسك باحترام، بتقوي ثقتك فيها.",
+      "حاول تقلل التسويف بتحديد أول خطوة واضحة ومحددة.",
+      "ما تشتريش حاجة لمجرد إن عليها عرض؛ فكر إذا كنت محتاجها فعلًا.",
+      "لو حد ساعدك، عبر عن تقديرك؛ الامتنان بيقوي العلاقات.",
+      "سيب الماضي يعلمك، لكن ما تخليهوش يمنعك من فرصة جديدة.",
+      "خلي أهدافك قابلة للتعديل؛ تغيير الخطة مش معناه التخلي عن الحلم.",
+      "حافظ على خصوصيتك، وشارك تفاصيلك مع الناس اللي تثق فيهم.",
+      "خد رأي شخص أمين لما تحتاج منظور مختلف، من غير ما تنسى صوتك.",
+      "استخدم التقويم أو قائمة المهام عشان تريح دماغك من التذكر.",
+      "نظم ركن صغير حواليك؛ المكان الهادي يساعد على صفاء الذهن.",
+      "خصص وقت لضحكة حلوة؛ الضحك مش تضييع وقت.",
+      "افتكر إن طلب المساعدة خطوة شجاعة مش علامة ضعف.",
+      "ما تسمحش ليوم صعب يقنعك إن حياتك كلها صعبة.",
+      "خلي فضولك حي؛ اسأل واتعلم حتى لو بدأت من الصفر.",
+      "اكتب رسالة لنفسك تفتكر فيها الحاجات اللي بتحبها فيها.",
+      "اترك مساحة للخطأ في خططك؛ المرونة بتخلي الطريق أهدى.",
+      "لما حد يزعلك، اشرح أثر الموقف بدل ما تكتم كل حاجة.",
+      "ما تهملش الفحوصات والاهتمام بصحتك؛ الوقاية اهتمام بنفسك.",
+      "اعمل نسخة احتياطية لصورك وملفاتك المهمة عشان تفضل مطمن.",
+      "خد قرارك على أساس قيمك، مش بس عشان ترضي التوقعات.",
+      "مافيش سن معين لازم تكون حققت فيه كل حاجة؛ طريقك ملكك.",
+      "احتفظ بدفتر للأفكار اللي نفسك تجربها، وارجع له وقت الإلهام.",
+      "لو حسيت إنك مضغوط، ألغِ حاجة غير ضرورية وخد نفس.",
+      "اختار معاركك؛ سلامك النفسي أوقات أهم من إثبات وجهة نظرك.",
+      "خصص وقتًا للناس اللي بيحسسوا قلبك بالأمان والقبول.",
+      "ذكر نفسك إنك تقدر تبدأ من جديد أكتر من مرة.",
+      "ما تهملش إنجازاتك لمجرد إنها بقت جزء من روتينك؛ لسه تستاهل التقدير.",
+      "خلي توقعاتك من نفسك واقعية ورحيمة، خصوصًا وقت التعب.",
+      "استخدم كلمات مرور قوية ومختلفة لحساباتك المهمة.",
+      "ما تفتحش رسالة أو رابط مش واثق في مصدره؛ أمانك الرقمي مهم.",
+      "اتعلم تقول اللي محتاجه بهدوء ومن غير اعتذار عن وجودك.",
+      "خلي عندك خطة بسيطة للحاجات المستعجلة عشان تقلل توترك.",
+      "راقب تقدمك مقارنة بنفسك زمان، مش بالناس حواليك.",
+      "لما تحقق حاجة كنت بتسعى لها، ادي لنفسك وقت تستمتع بيها.",
+      "قلل متابعة المحتوى اللي بيخليك تحس إنك أقل أو متأخر.",
+      "احتفظ بمساحة لهواية بتحبها حتى لو ما بتجيبلكش أي إنجاز.",
+      "قبل ما تنام، افتكر حاجة واحدة كويسة حصلت النهارده.",
+      "افتكر دايمًا إنك تستاهل الحب والراحة والفرص الجميلة.",
+      "اختار خطوة واحدة تقدر تعملها النهارده بدل ما تشيل هم كل الطريق.",
+      "خصص وقتًا لترتيب أولوياتك كل أسبوع، وعدلها لو ظروفك اتغيرت.",
+      "خلي فضفضتك مع شخص أمين يساعدك تشوف الأمور بهدوء ووضوح.",
+      "افتكر إنك مش مطالب تشرح اختياراتك لكل الناس؛ يكفي إنها مناسبة ليك."
+    ];
+    let tipIndex = null;
+    let cardCount = 0;
+
+    function celebrate() {
+      if (reducedMotion.matches) return;
+
+      scene.querySelectorAll(".confetti").forEach(piece => piece.remove());
+      const colors = ["#e85d91", "#f7aec8", "#f6d58a", "#d9b4e8", "#ffffff"];
+      const count = 72;
+      for (let index = 0; index < count; index += 1) {
+        const piece = document.createElement("span");
+        piece.className = "confetti";
+        piece.setAttribute("aria-hidden", "true");
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.backgroundColor = colors[index % colors.length];
+        piece.style.setProperty("--duration", `${2.2 + Math.random() * 2.2}s`);
+        piece.style.setProperty("--drift", `${(Math.random() - 0.5) * 260}px`);
+        piece.style.setProperty("--spin", `${Math.random() * 900 - 450}deg`);
+        if (index % 4 === 0) piece.style.borderRadius = "50%";
+        scene.append(piece);
+        piece.addEventListener("animationend", () => piece.remove(), { once: true });
+      }
+    }
+
+    button.addEventListener("click", () => {
+      tipIndex = tipIndex === null
+        ? Math.floor(Math.random() * tips.length)
+        : (tipIndex + 1) % tips.length;
+      cardCount += 1;
+      const newCard = cardTemplate.cloneNode(true);
+      const newMessage = newCard.querySelector(".card-message");
+      const stackedCards = cardStack.querySelectorAll(".card");
+      const depthStep = 12;
+
+      newCard.id = `greeting-card-${cardCount}`;
+      newCard.setAttribute("aria-label", `نصيحة ${tipIndex + 1}`);
+      newMessage.id = `card-message-${cardCount}`;
+      newMessage.textContent = tips[tipIndex];
+      newMessage.classList.add("tip-changing");
+      newCard.classList.add("card-entering");
+      newCard.addEventListener("animationend", () => newCard.classList.remove("card-entering"), { once: true });
+
+      stackedCards.forEach((card, index) => {
+        const depth = Math.min(index + 1, 4);
+        const side = depth % 2 === 0 ? -1 : 1;
+        const horizontalOffset = side * (14 + Math.floor((depth - 1) / 2) * 5);
+        const angle = side * 3.5;
+        card.style.zIndex = String(stackedCards.length - index);
+        card.style.transform = `translate(${horizontalOffset}px, ${depth * depthStep}px) rotate(${angle}deg) scale(${1 - depth * 0.025})`;
+        card.setAttribute("aria-hidden", "true");
+      });
+
+      newCard.style.zIndex = String(stackedCards.length + 1);
+      newCard.style.transform = "rotate(0) scale(1.035)";
+      newCard.setAttribute("aria-hidden", "false");
+      cardStack.prepend(newCard);
+      buttonLabel.classList.remove("button-label-changing");
+      void buttonLabel.offsetWidth;
+      buttonLabel.classList.add("button-label-changing");
+      scene.classList.add("opened");
+      button.setAttribute("aria-expanded", "true");
+      button.setAttribute("aria-controls", newMessage.id);
+      buttonLabel.textContent = "Pick Yours";
+      announcement.textContent = `نصيحة ${tipIndex + 1} من ${tips.length}: ${tips[tipIndex]}`;
+      celebrate();
+    });
+  </script>
+</body>
+</html>
